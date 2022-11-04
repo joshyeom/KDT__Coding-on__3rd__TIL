@@ -168,3 +168,51 @@ UPDATE user SET address = '제주특별자치도 제주시', name = '이지현' 
 -- delete에서는 where절이 항상 따라다님
 DELETE FROM user WHERE id = 11;
 DELETE FROM user WHERE id > 8; -- 9이상 id값을 가진 데이터가 삭제 됨.
+
+CREATE TABLE user (
+    id VARCHAR(10) NOT NULL PRIMARY KEY,
+    pw VARCHAR(20) NOT NULL,
+    name VARCHAR(5) NOT NULL,
+    gender ENUM('F', 'M', '') DEFAULT '',
+    birthday DATE NOT NULL,
+    age INT(3) NOT NULL DEFAULT 0
+)
+
+INSERT INTO user(id, pw, name, gender, birthday, age) VALUES('hong1234','8o4bkg', '홍길동', 'M', "1990-01-31", 33);
+INSERT INTO user(id, pw, name, gender, birthday, age) VALUES('sexysung','87awjkdf', '성춘향', 'F', "1992-03-31", 31);
+INSERT INTO user(id, pw, name, gender, birthday, age) VALUES('power70','qxur8sda', '변사또', 'M', "1970-05-02", 53);
+INSERT INTO user(id, pw, name, gender, birthday, age) VALUES('hanjo','jk48fn4', '한조', 'M', "1984-10-18", 39);
+INSERT INTO user(id, pw, name, gender, birthday, age) VALUES('widowmaker','38ewifh3', '위도우', 'F', "1976-06-27", 47);
+INSERT INTO useSr(id, pw, name, gender, birthday, age) VALUES('dvadva','k3f3ah', '송하나', 'F', "2001-06-03", 22);
+INSERT INTO user(id, pw, name, gender, birthday, age) VALUES('jungkrat','4ifha7f', '정크랫', 'M', "1999-11-11", 24);
+
+
+1. SELECT * FROM user ORDER BY birthday ASC;
+2. SELECT * FROM user WHERE gender = 'M' ORDER BY gender DESC;
+3. SELECT * FROM user WHERE birthday BETWEEN '1990-00-00' AND '2000-00-00';
+4. SELECT * FROM user WHERE birthday LIKE '%-06-%' ORDER BY birthday ASC;
+5. SELECT * FROM user WHERE gender = 'M' AND birthday BETWEEN '1970-00-00' AND '1980-00-00';
+6. SELECT * FROM user ORDER BY age DESC LIMIT 3;
+7. SELECT * FROM user WHERE age BETWEEN 25 AND 50;
+8. UPDATE user SET pw = 12345678 WHERE id = 'hong1234';
+9. DELETE FROM user WHERE id = 'jungkrat';
+
+
+INSERT INTO customer (id, name, birthday) VALUES ('aaa', '김이현', '1990-03-17');
+INSERT INTO customer (id, name, birthday) VALUES ('bbb', '최지율', '1992-11-01');
+INSERT INTO customer (id, name, birthday) VALUES ('ccc', '이헤진', '1993-05-31');
+
+
+CREATE TABLE orderlist (
+    id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    customer_id VARCHAR(20) NOT NULL,
+    product_name VARCHAR(20) NOT NULL,
+    quantity INT,
+    FOREIGN KEY(customer_id) REFERENCES customer(id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+INSERT INTO orderlist (customer_id, product_name, quantity) VALUES ('aaa', '맥북m1', 1);
+INSERT INTO orderlist (customer_id, product_name, quantity) VALUES ('bbb', '빅파이', 31);
+INSERT INTO orderlist (customer_id, product_name, quantity) VALUES ('ccc', '키보드', 3);
+INSERT INTO orderlist (customer_id, product_name, quantity) VALUES ('bbb', '초코파이', 5);
+INSERT INTO orderlist (customer_id, product_name, quantity) VALUES ('ccc', '귀여운텀블러', 1);

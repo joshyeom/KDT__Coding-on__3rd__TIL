@@ -2,9 +2,9 @@
 
 Section: KDT 3rd
 작성일시: 2022년 11월 3일 오후 3:46
-최종 편집일시: 2022년 11월 4일 오후 12:15
+최종 편집일시: 2022년 11월 4일 오후 3:43
 
-![화면 캡처 2022-11-04 090928.png](./1104/%ED%99%94%EB%A9%B4%20%EC%BA%A1%EC%B2%98%202022-11-04%20090928.png)
+![화면 캡처 2022-11-04 090928.png](1104/%25ED%2599%2594%25EB%25A9%25B4_%25EC%25BA%25A1%25EC%25B2%2598_2022-11-04_090928.png)
 
 ![2.png](1104/2.png)
 
@@ -126,6 +126,17 @@ SELECT * FROM user WHERE age BETWEEN 25 AND 30;
 -- IN (list): 리스트 있는 것 중에 일치하면 참
 SELECT * FROM user WHERE age IN (20, 21, 22, 23);
 
+-- LIKE: 패턴 조회
+-- %: 0개 이상의 문자
+-- _: 1개의 단일 문자
+SELECT * FROM user WHERE address LIKE '서울%'; -- '서울'로 시작하는 주소인 데이터
+SELECT * FROM user WHERE name LIKE '__희'; -- 이름의 마지막 글자가 '희'인 데이터
+-- 질문) 구문에서 이름이 4글자이거나 2글자인 사람은 제외되는 건가요? 네!
+SELECT * FROM user WHERE name LIKE '%희%'; -- 이름에 '희'가 있는 데이터
+SELECT * FROM user WHERE address LIKE '%광역%'; -- 주소에 '광역'이 포함된 데이터
+SELECT * FROM user WHERE name LIKE '__희' ORDER BY age DESC;
+-- 이름의 마지막 글자가 '희'인 사람들 나이 기준으로 내림차순
+
 -- IS NULL
 -- IS NOT NULL
 INSERT INTO user (name, age) VALUES ('서현승', 28);
@@ -133,6 +144,13 @@ SELECT * FROM user;
 
 SELECT * FROM user WHERE address IS NULL;
 SELECT * FROM user WHERE address IS NOT NULL;
+
+-- ORDER BY절: 데이터 정렬
+-- ASC: 오름차순 (기본값)
+-- DESC: 내림차순
+SELECT * FROM user ORDER BY age DESC; -- age 컬럼 내림차순
+SELECT * FROM user WHERE id > 6 ORDER BY age ASC; -- id 6초과인 사람 중에서 age 컬럼 오름차순
+SELECT * FROM user ORDER BY name ASC; -- name 컬럼 오름차순 정렬 (가나다순)
 ```
 
 ![18.png](1104/18.png)
@@ -165,4 +183,137 @@ UPDATE user SET address = '제주특별자치도 제주시', name = '이지현' 
 -- delete에서는 where절이 항상 따라다님
 DELETE FROM user WHERE id = 11;
 DELETE FROM user WHERE id > 8; -- 9이상 id값을 가진 데이터가 삭제 됨.
+```
+
+![20.png](1104/20.png)
+
+```sql
+1. SELECT * FROM user ORDER BY birthday ASC;
+2. SELECT * FROM user WHERE gender = 'M' ORDER BY gender DESC;
+3. SELECT * FROM user WHERE birthday BETWEEN '1990-00-00' AND '2000-00-00';
+4. SELECT * FROM user WHERE birthday LIKE '%-06-%' ORDER BY birthday ASC;
+5. SELECT * FROM user WHERE gender = 'M' AND birthday BETWEEN '1970-00-00' AND '1980-00-00';
+6. SELECT * FROM user ORDER BY age DESC LIMIT 3;
+7. SELECT * FROM user WHERE age BETWEEN 25 AND 50;
+8. UPDATE user SET pw = 12345678 WHERE id = 'hong1234';
+9. DELETE FROM user WHERE id = 'jungkrat';
+```
+
+## 데이터 베이스 심화
+
+```sql
+-- [PK-FK 연결하기]
+-- 1. 기본 키 제약조건
+-- : 고객 테이블에 기본키를 설정함
+
+-- 고객(customer) 테이블 생성
+CREATE TABLE customer (
+    id VARCHAR(10) NOT NULL PRIMARY KEY,
+    name VARCHAR(10) NOT NULL,
+    birthday DATE NOT NULL
+);
+DESC customer;
+
+-- 고객(customer) 테이블 데이터 추가
+INSERT INTO customer (id, name, birthday) VALUES ('aaa', '김이현', '1990-03-17');
+INSERT INTO customer (id, name, birthday) VALUES ('bbb', '최지율', '1992-11-01');
+INSERT INTO customer (id, name, birthday) VALUES ('ccc', '이혜진', '1993-05-31');
+
+-- 고객(customer) 테이블 정보 확인
+SELECT * FROM customer;
+
+-- #################################################
+-- 2. 외래키 제약조건
+-- : 두 테이블 사이의 관계를 만들어줌
+-- 다른 테이블의 기본키(PK)를 현재 테이블의 외래키(FK)로 연결함
+-- 기준 테이블: 기본키 갖는 테이블
+-- 참조 테이블: 외래키가 있는 테이블
+-- 형식: FOREIGN KEY(열_이름) REFERENCES 기준_테이블(열_이름)
+
+-- ON UPDATE CASCADE: 기준 테이블의 데이터가 변경되면 참조 테이블의 데이터도 변경됨
+-- ON DELETE CASCADE: 기준 테이블의 데이터가 삭제되면 참조 테이블의 데이터도 삭제됨
+
+-- 주문목록(orderlist) 테이블 생성
+DROP TABLE orderlist;
+CREATE TABLE orderlist (
+    id INT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    customer_id VARCHAR(20) NOT NULL,
+    product_name VARCHAR(20) NOT NULL,
+    quantity INT,
+    FOREIGN KEY(customer_id) REFERENCES customer(id) ON UPDATE CASCADE ON DELETE CASCADE
+);
+DESC orderlist;
+
+-- 고객(Orderlist) 테이블 데이터 추가
+INSERT INTO orderlist (customer_id, product_name, quantity) VALUES ('aaa', '맥북m1', 1);
+INSERT INTO orderlist (customer_id, product_name, quantity) VALUES ('bbb', '빅파이', 31);
+INSERT INTO orderlist (customer_id, product_name, quantity) VALUES ('ccc', '키보드', 3);
+INSERT INTO orderlist (customer_id, product_name, quantity) VALUES ('bbb', '초코파이', 5);
+INSERT INTO orderlist (customer_id, product_name, quantity) VALUES ('ccc', '귀여운텀블러', 1);
+
+-- 고객(Orderlist) 테이블 정보 확인
+SELECT * FROM orderlist;
+
+-- #################################################
+-- [JOIN, 조인]
+-- : 두 테이블을 묶어서 하나의 테이블을 만듦
+-- 두 테이블을 엮어서 원하는 형태를 보고 싶을 때
+-- ex.
+-- customer(id, name, birthday) / orderlist(id, customer_id, product_name, quantity)
+-- 하나의 큰 테이블(customer_id, product_name, quantity, name, birthday)
+
+-- *일대다 관계 (one to many)
+-- (1) A 테이블에는 하나의 값만 존재
+-- (2) B 테이블에는 여러 개의 값이 존재
+-- ex. 한 회원(A)은 여러 개의 주문(B) 정보를 가질 수 있음
+--      => 즉, 회원은 한 명(one) 이지만 구매를 여러 번 (many) 가능
+
+/*
+SELECT 열_목록
+FROM tableA
+    INNER JOIN tableB
+    ON 조인_조건
+[WHERE 검색_조건]
+*/
+
+SELECT * FROM customer;
+SELECT * FROM orderlist;
+
+-- 유저아이디를 기준으로 customer와 orderlist 조인 (모든 컬럼에 대해 모든 행 보기)
+SELECT *
+FROM customer
+    INNER JOIN orderlist
+    ON customer.id = orderlist.customer_id;
+
+-- 유저아이디를 기준으로 customer와 orderlist 조인 (모든 컬럼에 대해 where절 만족하는 행만 보기)
+SELECT *
+FROM customer
+    INNER JOIN orderlist
+    ON customer.id = orderlist.customer_id
+WHERE quantity >= 5;
+
+-- 유저아이디를 기준으로 customer와 orderlist 조인 (일부 컬럼에 대해 모든 행 보기)
+SELECT customer.id, customer.name, orderlist.product_name, orderlist.quantity
+FROM customer
+    INNER JOIN orderlist
+    ON customer.id = orderlist.customer_id;
+
+-- 유저아이디를 기준으로 customer와 orderlist 조인 (일부 컬럼 이름에 별명을 붙여 모든 행 보기)
+SELECT orderlist.id as order_id, customer.id as user_id, orderlist.product_name, orderlist.quantity
+FROM customer
+    INNER JOIN orderlist
+    ON customer.id = orderlist.customer_id;
+
+-- 유저아이디를 기준으로 customer와 orderlist 조인 (일부 컬럼 이름에 별명을 붙여 조건을 만족하는 행 보기)
+SELECT orderlist.id as order_id, customer.id as user_id, orderlist.product_name, orderlist.quantity
+FROM customer
+    INNER JOIN orderlist
+    ON customer.id = orderlist.customer_id
+WHERE orderlist.id = 3;
+
+SELECT orderlist.id as customer.id, order_id as user_id, orderlist.product_name, orderlist.quantity
+FROM customer
+    INNER JOIN orderlist
+    ON customer.id = orderlist.customer_id
+WHERE orderlist.id = 3;
 ```
