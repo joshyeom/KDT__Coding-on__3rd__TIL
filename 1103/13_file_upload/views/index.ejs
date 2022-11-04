@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <!-- axios cdn -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+    <style>
+      body {
+        background-color: beige;
+        padding-bottom: 1000px;
+      }
+
+      .profile {
+        border-radius: 50%;
+        box-shadow: 0 0 10px #0002;
+      }
+    </style>
+  </head>
+  <body>
+    <h1><%= title %></h1>
+
+    <h2>Single file upload</h2>
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+      <input type="file" name="userfile" /><br />
+      <input type="text" name="title" /><br />
+      <button type="submit">업로드</button>
+    </form>
+
+    <h2>Multi file upload (ver1)</h2>
+    <p>하나의 input에 여러 개 파일 업로드하기</p>
+    <form action="/upload/array" method="POST" enctype="multipart/form-data">
+      <input type="file" name="userfiles" multiple /><br />
+      <input type="text" name="title" /><br />
+      <button type="submit">업로드</button>
+    </form>
+
+    <h2>Multi file upload (ver2)</h2>
+    <p>여러 개의 input에 각각 파일 업로드하기</p>
+    <form action="/upload/fields" method="POST" enctype="multipart/form-data">
+      <input type="file" name="userfile1" /><br />
+      <input type="text" name="title1" /><br />
+      <input type="file" name="userfile2" /><br />
+      <input type="text" name="title2" /><br />
+      <button type="submit">업로드</button>
+    </form>
+
+    <h2>동적파일 업로드</h2>
+    <input type="file" name="dynamicFile" id="dynamicFile" /><br />
+    <button type="button" onclick="fileUpload()">업로드</button>
+    <br />
+    <img src="" width="200" />
+
+    <script>
+      function fileUpload() {
+        console.log('click fileupload');
+
+        const formData = new FormData(); // 폼 객체 생성
+        const file = document.getElementById('dynamicFile'); // file input
+
+        console.dir(file); // file input
+        console.dir(file.files[0]); // file input에 들어간 파일 정보
+
+        // formData.append(name, value);
+        // - input의 name과 input의 value
+        formData.append('dynamicFile', file.files[0]);
+
+        // axios 통신
+        axios({
+          method: 'POST',
+          url: '/dynamicFile',
+          data: formData,
+          headers: {
+            'Content-Type': 'multipart/form-data', // enctype="multipart/form-data"
+          },
+        }).then(function (response) {
+          // response: 클라이언트가 POST /dynamicFile 요청을 보낸 응답 결과
+          console.log(response);
+          console.log(response.data);
+          console.log(response.data.path);
+          document.querySelector('img').src = response.data.path;
+          document.querySelector('img').classList.add('profile');
+        });
+      }
+    </script>
+  </body>
+</html>
