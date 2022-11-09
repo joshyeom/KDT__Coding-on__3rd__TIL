@@ -216,3 +216,21 @@ INSERT INTO orderlist (customer_id, product_name, quantity) VALUES ('bbb', '빅�
 INSERT INTO orderlist (customer_id, product_name, quantity) VALUES ('ccc', '키보드', 3);
 INSERT INTO orderlist (customer_id, product_name, quantity) VALUES ('bbb', '초코파이', 5);
 INSERT INTO orderlist (customer_id, product_name, quantity) VALUES ('ccc', '귀여운텀블러', 1);
+
+
+SELECT * FROM customer
+    INNER JOIN orderlist
+    ON customer.id = orderlist.customer_id
+WHERE quantity >= 5;
+
+SELECT customer.id, customer.name, orderlist.product_name, orderlist.quantity
+FROM customer
+INNER JOIN orderlist
+ON customer.id = orderlist.customer_id;
+
+
+SELECT orderlist.id as customer.id, order_id as user_id, orderlist.product_name, orderlist.quantity
+FROM customer
+    INNER JOIN orderlist
+    ON customer.id = orderlist.customer_id
+WHERE orderlist.id = 3;
