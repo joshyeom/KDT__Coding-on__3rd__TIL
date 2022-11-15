@@ -1,0 +1,43 @@
+body {
+    margin: 0;
+    width: 100vw;
+    height: 100vh;
+}
+main {
+    width: 100%;
+    height: 95%;
+background-color: skyblue;
+}
+
+span {
+font-size: 40px;
+padding: 10px;
+border-radius: 10px;
+}
+
+.my-chatbox{
+    text-align: right;
+}
+
+div {
+padding: 10px;
+}
+
+.me{
+background-color: yellow;
+}
+
+.you {
+background-color: white;
+}
+
+input{
+ width: 800px;
+ height: 30px;
+}
+
+.notice {
+    text-align: center;
+    color: navy;
+    font-size: 14px;
+}
